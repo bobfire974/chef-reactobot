@@ -1,0 +1,39 @@
+name: Scan Discord et envoi du rapport
+
+on:
+  schedule:
+    # 8h et 20h heure de La Réunion (UTC+4) => 4h et 16h UTC
+    - cron: "0 4 * * *"
+    - cron: "0 16 * * *"
+  workflow_dispatch: {} # permet aussi de le lancer manuellement depuis l'onglet Actions
+
+permissions:
+  contents: write # nécessaire pour recommit data.json
+
+jobs:
+  run-bot:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout du repo
+        uses: actions/checkout@v4
+
+      - name: Installer Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Installer les dépendances
+        run: npm install
+
+      - name: Lancer le scan + rapport
+        env:
+          TOKEN: ${{ secrets.DISCORD_TOKEN }}
+        run: node scan-and-report.js
+
+      - name: Sauvegarder data.json
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data.json
+          git diff --staged --quiet || git commit -m "Update data.json [skip ci]"
+          git push

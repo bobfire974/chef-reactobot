@@ -1,0 +1,11 @@
+{
+  "name": "discord-reaction-bot",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Bot Discord qui vérifie les réactions aux messages importants",
+  "main": "scan-and-report.js",
+  "dependencies": {
+    "discord.js": "^14.14.1",
+    "dotenv": "^16.4.5"
+  }
+}
